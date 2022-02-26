@@ -4,7 +4,7 @@ class GanttViewer{
         this.dom_id = dom_id;
     }
 
-    // データを登録
+    // データをもとに描画
     data(cur_data){
         // 日付のmin/maxを取得
         let min_dt = d3.min(cur_data.map(d => new Date(d['start_dt'])));
