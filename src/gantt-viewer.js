@@ -1,7 +1,11 @@
 /*
 gantt-viewer
 Copyright (c) 2022 yo16
+Released under the MIT license
 */
+
+var COLOR_PALETTE = ['#4E79A7', '#F28E2B', '#E15759', '#76B7B2', '#59A14F', '#EDC948', '#B07AA1', '#FF9DA7', '#9C755F', '#BAB0AC'];
+
 
 class GanttViewer{
     constructor(dom_id){
@@ -43,7 +47,7 @@ class GanttViewer{
 
         // 描画 -------------
         // 設定
-        const padding_left = 120;
+        const padding_left = 250;
         const padding_right = 10;
         const padding_top = 20;
         const padding_bottom = 10;
@@ -133,6 +137,7 @@ class GanttViewer{
             .attr("class", "axis axis-x")
             .attr("transform", "translate(0,"+(padding_top)+")")
             .call(axisx);
+        /*
         // y軸を描画
         const axisy = d3
             .axisLeft(yScale)
@@ -142,6 +147,7 @@ class GanttViewer{
             .attr("class", "axis axis-y")
             .attr("transform", "translate("+(padding_left)+",0)")
             .call(axisy);
+        */
     }
 
 
@@ -150,7 +156,7 @@ class GanttViewer{
         // データを折れ線で描画
         for(let i=0; i<data.length; i++){
             // 色が指定されている場合はする
-            let color = "steelblue";
+            let color = COLOR_PALETTE[0];
             if(original_data[i].hasOwnProperty("color")){
                 color = original_data[i]["color"];
             }
@@ -230,18 +236,73 @@ class GanttViewer{
         const padding_left = 5;
         const padding_vertical = 5;
 
-        // 
+        // テキストを書くbox
         svg
-            .selectAll("rect.item")
+            .selectAll("rect.comment-box")
             .data(original_data)
             .enter()
             .append("rect")
-            .attr("class", "item")
-            .attr("x", function(d, i){ return padding_left; })
+            .attr("class", "comment-box")
+            .attr("x", padding_left)
             .attr("y", function(d, i){ return yScale(i+1)-(one_line_height/2)+padding_vertical; })
             .attr("width", graph_padding_left-padding_left)
             .attr("height", one_line_height-padding_vertical*2)
-            .attr("fill", "#F2CAB9");
+            .attr("fill", "#fff")
+            .attr("stroke", "#ddd")
+            .attr("stroke-width", "2")
+            .attr("rx", "5");
+        
+        // 色サンプル
+        let circle_r = 15;
+        let circle_left_padding = 8;
+        svg
+            .selectAll("circle.comment-sample")
+            .data(original_data)
+            .enter()
+            .append("circle")
+            .attr("class", "comment-sample")
+            .attr("cx", padding_left + circle_r + circle_left_padding)
+            .attr("cy", function(d, i){ return yScale(i+1)})
+            .attr("r", circle_r)
+            .attr("fill", function(d, i){
+                if(original_data[i].hasOwnProperty("color")){
+                    return original_data[i]["color"];
+                }
+                return COLOR_PALETTE[0];
+            });
+        
+        // テキスト
+        svg
+            .selectAll("text.comment-text-main")
+            .data(original_data)
+            .enter()
+            .append("text")
+            .attr("class", "comment-text comment-text-main")
+            .attr("x", padding_left + circle_r*2 + circle_left_padding*2)
+            .attr("y", function(d, i){ return yScale(i+1); })
+            .text(function(d, i){
+                let s = original_data[i]["title"];
+                if( s.length>11 ){ s = s.substr(0,11)+"..."; }
+                return s;
+            })
+            .attr("fill", "#000");
+        // 詳細
+        svg
+            .selectAll("text.comment-text-detail")
+            .data(original_data)
+            .enter()
+            .append("text")
+            .attr("class", "comment-text comment-text-detail")
+            .attr("x", padding_left + circle_r*2 + circle_left_padding*2)
+            .attr("y", function(d, i){ return yScale(i+1)+16; })
+            .text(function(d, i){
+                let s = original_data[i]["detail"];
+                if( s.length>19 ){ s = s.substr(0,19)+"..."; }
+                return s;
+            })
+            .attr("font-size", "60%")
+            .attr("fill", "#666");
 
     }
 }
+
