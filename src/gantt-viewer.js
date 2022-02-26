@@ -79,12 +79,13 @@ class GanttViewer{
         this.draw_lines(svg, data, original_data, xScale, yScale, one_line_width);
 
         // 説明を描画
-        this.draw_items(svg, original_data, yScale, one_line_height);
+        this.draw_items(svg, original_data, yScale, one_line_height, padding_left);
     }
 
 
-    // 背景の縞模様を描画
+    // 背景を描画
     draw_background(svg, original_data, yScale, one_line_height){
+        /*
         let cur_data = [];
         // 1行おきに間引く
         for(let i=1; i<original_data.length; i+=2){
@@ -103,6 +104,20 @@ class GanttViewer{
             .attr("width", svg.node().clientWidth)
             .attr("height", one_line_height)
             .attr("fill", "#f3f3f3");
+        */
+        // 全部の行に細い線を描く
+        svg
+            .selectAll("rect.background-line")
+            .data(original_data)
+            .enter()
+            .append("line")
+            .attr("class", "background-line")
+            .attr("x1", 0)
+            .attr("y1", function(d,i){ return yScale(i+1); })
+            .attr("x2", svg.node().clientWidth)
+            .attr("y2", function(d,i){ return yScale(i+1); })
+            .attr("stroke-width", 3)
+            .attr("stroke", "#f6f6f3");
     }
 
     
@@ -211,9 +226,9 @@ class GanttViewer{
 
 
     // 説明書きを描画
-    draw_items(svg, original_data, yScale, one_line_height){
-    /*
+    draw_items(svg, original_data, yScale, one_line_height, graph_padding_left){
         const padding_left = 5;
+        const padding_vertical = 5;
 
         // 
         svg
@@ -222,11 +237,11 @@ class GanttViewer{
             .enter()
             .append("rect")
             .attr("class", "item")
-            .attr("x", function(d, i){ return 0; })
-            .attr("y", function(d, i){ return yScale(i+1)-(one_line_height/2); })
-            .attr("width", svg.node().clientWidth)
-            .attr("height", one_line_height)
-            .attr("fill", "#f00");
-    */
+            .attr("x", function(d, i){ return padding_left; })
+            .attr("y", function(d, i){ return yScale(i+1)-(one_line_height/2)+padding_vertical; })
+            .attr("width", graph_padding_left-padding_left)
+            .attr("height", one_line_height-padding_vertical*2)
+            .attr("fill", "#F2CAB9");
+
     }
 }
