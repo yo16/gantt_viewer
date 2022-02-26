@@ -114,6 +114,7 @@ class GanttViewer{
             svg
                 .append("path")
                 .datum(data[i])
+                .attr("class", "line"+(i+1))
                 .attr("fill", "none")
                 .attr("stroke", color)
                 .attr("stroke-width", one_line_width)
@@ -121,8 +122,7 @@ class GanttViewer{
                 .attr("d", d3.line()
                     .x(function(d){ return xScale(d[0]); })
                     .y(function(d){ return yScale(d[1]); })
-                )
-                .attr("class", "line"+(i+1));
+                );
         }
 
         // 点も描画
@@ -132,16 +132,49 @@ class GanttViewer{
                 .data(data[i])
                 .enter()
                 .append("circle")
+                .attr("class", "line-point"+(i+1))
                 .attr("cx", function(d){ return xScale(d[0]); })
                 .attr("cy", function(d){ return yScale(d[1]); })
                 .attr("fill", "rgba(255,255,255,0.6)")
-                .attr("r", 4)
-                .attr("class", "line-point"+(i+1));
+                .attr("r", 4);
         }
         
         // 開始日と終了日を描画
-        for(let i=0; i<data.length; i++){
-            //let min_dt = 
+        let dt2str = function(dt){
+            return (dt.getMonth()+1) + "/" + dt.getDate();
         }
+        let min_dts = [];
+        let max_dts = [];
+        for(let i=0; i<data.length; i++){
+            let min_dt = d3.min(data[i].map(d => d[0]));
+            let max_dt = d3.max(data[i].map(d => d[0]));
+            // minの左にminの日にちを、maxの右にmaxの日にちを描く
+            // 同じ場合はmaxのみ
+            if(min_dt<max_dt){
+                min_dts.push([new Date(min_dt.getTime()), i+1]);
+            }
+            max_dts.push([new Date(max_dt.getTime()), i+1]);
+        }
+        svg
+            .selectAll("text.line-point-start")
+            .data(min_dts)
+            .enter()
+            .append("text")
+            .attr("class", "line-point-start")
+            .attr("x", function(d){ return xScale(d[0])-19; })
+            .attr("y", function(d){ return yScale(d[1])+7; })
+            .attr("text-anchor", "end")
+            .text(function(d){ return dt2str(d[0]) })
+            .attr("fill", "rgba(0,0,0,0.8)");
+        svg
+            .selectAll("text.line-point-end")
+            .data(max_dts)
+            .enter()
+            .append("text")
+            .attr("class", "line-point-start")
+            .attr("x", function(d){ return xScale(d[0])+19; })
+            .attr("y", function(d){ return yScale(d[1])+7; })
+            .text(function(d){ return dt2str(d[0]) })
+            .attr("fill", "rgba(0,0,0,0.8)");
     }
 }
