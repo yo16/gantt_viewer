@@ -65,7 +65,17 @@ class GanttViewer{
             .domain([0, cur_data.length+1])
             .range([padding_top, svg_height-padding_bottom]);
 
-        // x軸を表示
+        // 軸を描画
+        this.draw_axis(svg, xScale, yScale, week_num, padding_top, padding_left);
+        
+        // 線を描画
+        this.draw_lines(svg, data, cur_data, xScale, yScale, one_line_width);
+    }
+
+    
+    // 軸を描画
+    draw_axis(svg, xScale, yScale, week_num, padding_top, padding_left){
+        // x軸を描画
         const axisx = d3
             .axisTop(xScale)
             .ticks(week_num)  // １週間ごとに目盛り
@@ -75,23 +85,26 @@ class GanttViewer{
             .attr("class", "axis axis-x")
             .attr("transform", "translate(0,"+(padding_top)+")")
             .call(axisx);
-
-        // y軸を表示
+        // y軸を描画
         const axisy = d3
             .axisLeft(yScale)
-            .ticks(cur_data.length);    // ★最終的には0にする
+            .ticks(6);    // ★最終的には0にする
         let y = svg
             .append("g")
             .attr("class", "axis axis-y")
             .attr("transform", "translate("+(padding_left)+",0)")
             .call(axisy);
-        
-        // データを折れ線で表示
+    }
+
+
+    // 線を描画
+    draw_lines(svg, data, original_data, xScale, yScale, one_line_width){
+        // データを折れ線で描画
         for(let i=0; i<data.length; i++){
             // 色が指定されている場合はする
             let color = "steelblue";
-            if(cur_data[i].hasOwnProperty("color")){
-                color = cur_data[i]["color"];
+            if(original_data[i].hasOwnProperty("color")){
+                color = original_data[i]["color"];
             }
 
             svg
@@ -107,7 +120,7 @@ class GanttViewer{
                 )
                 .attr("class", "line"+(i+1));
         }
-        // 点も表示
+        // 点も描画
         for(let i=0; i<data.length; i++){
             svg
                 .selectAll("circle.line-point"+(i+1))
@@ -122,4 +135,3 @@ class GanttViewer{
         }
     }
 }
-
