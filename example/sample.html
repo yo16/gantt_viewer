@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+	<title>gantt_viewer sample</title>
+	<script type="text/javascript" src="./js/d3.min.js"></script>
+	<script type="text/javascript" src="../src/gantt-viewer.js"></script>
+	<script type="text/javascript">
+	document.addEventListener("DOMContentLoaded", function(event){
+		let gantt_datas = [
+			{"id": "1", "title":"タスク1", "start_dt":"2022/2/1", "end_dt":"2022/2/4"},
+			{"id": "2", "title":"タスク2", "start_dt":"2022/2/7", "end_dt":"2022/2/10"},
+			{"id": "3", "title":"タスク3", "start_dt":"2022/2/14", "end_dt":"2022/2/18"},
+			{"id": "4", "title":"タスク4", "start_dt":"2022/2/21", "end_dt":"2022/2/25", "color":"#f00"},
+			{"id": "5", "title":"タスク5", "start_dt":"2022/2/28", "end_dt":"2022/2/28", "color":"#0f0"},
+		];
+
+		let gv = new GanttViewer("#gantt1");
+		gv.data(gantt_datas);
+	});
+	</script>
+</head>
+
+<body>
+	<div id="gantt1"></div>
+</body>
+</html>
