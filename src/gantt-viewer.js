@@ -43,7 +43,8 @@ class GanttViewer{
         const padding_right = 10;
         const padding_top = 20;
         const padding_bottom = 10;
-        const one_line_height = 50;
+        const one_line_height = 40;
+        const one_line_width = 30;
 
         // 全体設定
         let dom = d3.select(this.dom_id);
@@ -98,12 +99,25 @@ class GanttViewer{
                 .datum(data[i])
                 .attr("fill", "none")
                 .attr("stroke", color)
-                .attr("stroke-width", 35)
+                .attr("stroke-width", one_line_width)
                 .attr("stroke-linecap", "round")
                 .attr("d", d3.line()
                     .x(function(d){ return xScale(d[0]); })
                     .y(function(d){ return yScale(d[1]); })
                 );
+        }
+        // 点も表示
+        for(let i=0; i<data.length; i++){
+            svg
+                .selectAll("circle.line-point"+i)
+                .data(data[i])
+                .enter()
+                .append("circle")
+                .attr("cx", function(d){ return xScale(d[0]); })
+                .attr("cy", function(d){ return yScale(d[1]); })
+                .attr("fill", "rgba(255,255,255,0.6)")
+                .attr("r", 4)
+                .attr("class", "line-point"+i);
         }
     }
 }
