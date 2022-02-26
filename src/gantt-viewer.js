@@ -79,7 +79,7 @@ class GanttViewer{
         // y軸を表示
         const axisy = d3
             .axisLeft(yScale)
-            .ticks(cur_data.length);
+            .ticks(cur_data.length);    // ★最終的には0にする
         let y = svg
             .append("g")
             .attr("class", "axis axis-y")
@@ -104,12 +104,13 @@ class GanttViewer{
                 .attr("d", d3.line()
                     .x(function(d){ return xScale(d[0]); })
                     .y(function(d){ return yScale(d[1]); })
-                );
+                )
+                .attr("class", "line"+(i+1));
         }
         // 点も表示
         for(let i=0; i<data.length; i++){
             svg
-                .selectAll("circle.line-point"+i)
+                .selectAll("circle.line-point"+(i+1))
                 .data(data[i])
                 .enter()
                 .append("circle")
@@ -117,7 +118,7 @@ class GanttViewer{
                 .attr("cy", function(d){ return yScale(d[1]); })
                 .attr("fill", "rgba(255,255,255,0.6)")
                 .attr("r", 4)
-                .attr("class", "line-point"+i);
+                .attr("class", "line-point"+(i+1));
         }
     }
 }
