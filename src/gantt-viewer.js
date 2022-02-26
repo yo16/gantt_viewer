@@ -87,11 +87,17 @@ class GanttViewer{
         
         // データを折れ線で表示
         for(let i=0; i<data.length; i++){
+            // 色が指定されている場合はする
+            let color = "steelblue";
+            if(cur_data[i].hasOwnProperty("color")){
+                color = cur_data[i]["color"];
+            }
+
             svg
                 .append("path")
                 .datum(data[i])
                 .attr("fill", "none")
-                .attr("stroke", "steelblue")
+                .attr("stroke", color)
                 .attr("stroke-width", 35)
                 .attr("stroke-linecap", "round")
                 .attr("d", d3.line()
