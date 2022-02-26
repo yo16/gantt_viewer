@@ -1,3 +1,7 @@
+/*
+gantt-viewer
+Copyright (c) 2022 yo16
+*/
 
 class GanttViewer{
     constructor(dom_id){
@@ -120,6 +124,7 @@ class GanttViewer{
                 )
                 .attr("class", "line"+(i+1));
         }
+
         // 点も描画
         for(let i=0; i<data.length; i++){
             svg
@@ -132,6 +137,11 @@ class GanttViewer{
                 .attr("fill", "rgba(255,255,255,0.6)")
                 .attr("r", 4)
                 .attr("class", "line-point"+(i+1));
+        }
+        
+        // 開始日と終了日を描画
+        for(let i=0; i<data.length; i++){
+            //let min_dt = 
         }
     }
 }
