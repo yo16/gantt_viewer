@@ -9,12 +9,33 @@ class GanttViewer{
         // 日付のmin/maxを取得
         let min_dt = d3.min(cur_data.map(d => new Date(d['start_dt'])));
         let max_dt = d3.max(cur_data.map(d => new Date(d['end_dt'])));
-        let graph_min_dt = new Date();
-        let graph_max_dt = new Date();
-        graph_min_dt.setDate(min_dt.getDate() - min_dt.getDay() + 1);   // １つ前の月曜日を取得
+        let graph_min_dt = min_dt;
+        let graph_max_dt = max_dt;
+        graph_min_dt.setDate(min_dt.getDate() - min_dt.getDay() - 6);   // 前の週の月曜日を取得
         graph_max_dt.setDate(max_dt.getDate() + (7-max_dt.getDay()) + 1);   // 次の月曜日を取得
         // min～maxの週の数
         let week_num = ((graph_max_dt.getTime() - graph_min_dt.getTime())/(24*60*60*1000)) / 7;
+
+        // データ前処理
+        // [
+        //      [ [開始日, 1], [開始日の次の日, 1], [次の日, 1], ... ,[終了日, 1] ],
+        //      [ [開始日, 2], [開始日の次の日, 2], [次の日, 2], ... ,[終了日, 2] ],
+        //       ...
+        // の形にする
+        let data = [];
+        for(let i=0; i<cur_data.length; i++){
+            let line_data = [];
+            let start_dt = new Date(cur_data[i]['start_dt']);
+            let end_dt = new Date(cur_data[i]['end_dt']);
+            for(
+                let dt=start_dt;
+                dt<=end_dt;
+                dt.setDate(dt.getDate()+1)
+            ){
+                line_data.push([new Date(dt.getTime()), i+1]);
+            }
+            data.push(line_data);
+        }
 
         // 描画 -------------
         // 設定
@@ -63,6 +84,21 @@ class GanttViewer{
             .attr("class", "axis axis-y")
             .attr("transform", "translate("+(padding_left)+",0)")
             .call(axisy);
+        
+        // データを折れ線で表示
+        for(let i=0; i<data.length; i++){
+            svg
+                .append("path")
+                .datum(data[i])
+                .attr("fill", "none")
+                .attr("stroke", "steelblue")
+                .attr("stroke-width", 35)
+                .attr("stroke-linecap", "round")
+                .attr("d", d3.line()
+                    .x(function(d){ return xScale(d[0]); })
+                    .y(function(d){ return yScale(d[1]); })
+                );
+        }
     }
 }
 
