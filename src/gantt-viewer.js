@@ -18,20 +18,22 @@ class GanttViewer{
 
         // 描画 -------------
         // 設定
-        const padding_x = 100;
-        const padding_y = 30;
-        // １行の高さ
-        const height_oneline = 50;
+        const padding_left = 120;
+        const padding_right = 10;
+        const padding_top = 20;
+        const padding_bottom = 10;
+        const one_line_height = 50;
 
         // 全体
-        let height = height_oneline * cur_data.length;
         let dom = d3.select(this.dom_id);
+        let svg_width = dom.node().clientWidth;
+        let svg_height = one_line_height * cur_data.length + padding_top + padding_bottom;
+        let graph_width = svg_width - (padding_left + padding_right);
+        let graph_height = svg_height - (padding_top + padding_bottom);
         let svg = dom
             .append("svg")
-            .attr("width", dom.node().clientWidth)  // 親DOMの幅
-            .attr("height", height);
-        let graph_width = dom.node().clientWidth - padding_x;
-        let graph_height = dom.node().clientHeight - padding_y;
+            .attr("width", svg_width)
+            .attr("height", svg_height);
         
         // x軸グループ
         let x = svg
@@ -40,16 +42,16 @@ class GanttViewer{
         const xScale = d3
             .scaleTime()
             .domain([graph_min_dt, graph_max_dt])
-            .range([padding_x, graph_width]);
+            .range([padding_left, svg_width-padding_right]);
         const format = d3.timeFormat("%-m/%-d");
         const xTicks = week_num;  // １週間ごとに目盛り
         const axisx = d3
-            .axisBottom(xScale)
+            .axisTop(xScale)
             .ticks(xTicks)
             .tickFormat(format);
         // 設定
         x
-            .attr("transform", "translate("+0+","+(graph_height)+")")
+            .attr("transform", "translate(0,"+(padding_top)+")")
             .call(axisx);
 
         // y軸グループ
@@ -59,14 +61,14 @@ class GanttViewer{
         const yScale = d3
             .scaleLinear()
             .domain([0, cur_data.length+1])
-            .range([graph_height, padding_y]);
+            .range([padding_top, svg_height-padding_bottom]);
         const yTicks = cur_data.length;
         const axisy = d3
             .axisLeft(yScale)
             .ticks(yTicks);
         // 設定
         y
-            .attr("transform", "translate("+padding_x+","+0+")")
+            .attr("transform", "translate("+(padding_left)+",0)")
             .call(axisy);
 
             
