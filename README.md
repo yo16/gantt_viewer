@@ -18,28 +18,24 @@ document.addEventListener("DOMContentLoaded", function(event){
     // データを作る
     let gantt_datas = [
         {
-            "id": "1", 
             "title":"タスク1あいうえおかきくけこ", 
             "detail":"細かいことはいろいろありますがタスク１です。", 
             "start_dt":"2022/2/1", 
             "end_dt":"2022/2/25"
         },
         {
-            "id": "2", 
             "title":"task2abcdefg", 
             "detail":"細かいことはいろいろありますがタスク２です。", 
             "start_dt":"2022/2/7", 
             "end_dt":"2022/2/10"
         },
         {
-            "id": "3", 
             "title":"タスク3", 
             "detail":"細かいことはいろいろありますがタスク３です。", 
             "start_dt":"2022/2/14", 
             "end_dt":"2022/2/18"
         },
         {
-            "id": "4", 
             "title":"タスク4", 
             "detail":"細かいことはいろいろありますがタスク４です。", 
             "start_dt":"2022/2/21", 
@@ -47,7 +43,6 @@ document.addEventListener("DOMContentLoaded", function(event){
             "color":"#f00"
         },
         {
-            "id": "5", 
             "title":"タスク5", 
             "detail":"細かいことはいろいろありますがタスク５です。", 
             "start_dt":"2022/2/28", 
