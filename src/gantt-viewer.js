@@ -13,7 +13,7 @@ class GanttViewer{
     }
 
     // データをもとに描画
-    data(original_data){
+    data(original_data, today_dt=new Date()){
         // 日付のmin/maxを取得
         let min_dt = d3.min(original_data.map(d => new Date(d['start_dt'])));
         let max_dt = d3.max(original_data.map(d => new Date(d['end_dt'])));
@@ -78,6 +78,9 @@ class GanttViewer{
 
         // 軸を描画
         this.draw_axis(svg, xScale, yScale, week_num, padding_top, padding_left);
+
+        // 今日を描画
+        this.draw_today(svg, today_dt, xScale, padding_top);
         
         // 線を描画
         this.draw_lines(svg, data, original_data, xScale, yScale, one_line_width);
@@ -151,6 +154,62 @@ class GanttViewer{
     }
 
 
+    // 今日の線を描画
+    draw_today(svg, today_dt, xScale, padding_top){
+        // 設定
+        const box_padding = -10; // 長方形の上辺の位置
+        const width = 40;       // 長方形の幅
+        const height_box = 10;  // 日付を描く長方形の高さ
+        const height_tri = 5;  // 三角形の高さ
+        const today_color = "#c66";
+        
+        // 位置計算
+        let x = xScale(today_dt);
+        let box_y = padding_top + box_padding;
+        let points = [
+            [x, box_y + height_box + height_tri],
+            [x-width/2, box_y + height_box],
+            [x-width/2, box_y],
+            [x+width/2, box_y],
+            [x+width/2, box_y + height_box]
+        ];
+        
+        svg
+            .append("polygon")
+            .attr("class", "today_dt_box")
+            .datum(points)
+            .attr("points",function(d){
+                return d.map(p => p.join(",")).join(" ")
+            })
+            .attr("fill", today_color)
+            .attr("stroke", today_color)
+            .attr("stroke-width", "6")
+            .attr("stroke-linejoin", "round")
+        ;
+        // 日にち
+        svg
+            .append("text")
+            .attr("class", "today_dt_text")
+            .attr("x", x)
+            .attr("y", box_y + height_box)
+            .attr("text-anchor", "middle")
+            .text((today_dt.getMonth()+1) + "/" + today_dt.getDate())
+            .attr("font-size", height_box+"pt")
+            .attr("fill", "#eee")
+        ;
+        // 線
+        svg
+            .append("line")
+            .attr("x1", x)
+            .attr("y1", box_y + height_box)
+            .attr("x2", x)
+            .attr("y2", svg.node().clientHeight)
+            .attr("stroke", today_color)
+            .attr("stroke-width", 2)
+
+    }
+
+
     // 線を描画
     draw_lines(svg, data, original_data, xScale, yScale, one_line_width){
         // データを折れ線で描画
@@ -205,6 +264,32 @@ class GanttViewer{
             }
             max_dts.push([new Date(max_dt.getTime()), i+1]);
         }
+        let box_width = 50;
+        let box_height = 26;
+        svg
+            .selectAll("rect.line-point-startdt-background")
+            .data(min_dts)
+            .enter()
+            .append("rect")
+            .attr("class", "line-point-startdt-background")
+            .attr("x", function(d){ return xScale(d[0])-19-box_width; })
+            .attr("y", function(d){ return yScale(d[1])-box_height/2; })
+            .attr("width", box_width)
+            .attr("height", box_height)
+            .attr("fill", "rgba(255,255,255,0.8)")
+        ;
+        svg
+            .selectAll("rect.line-point-enddt-background")
+            .data(max_dts)
+            .enter()
+            .append("rect")
+            .attr("class", "line-point-enddt-background")
+            .attr("x", function(d){ return xScale(d[0])+19; })
+            .attr("y", function(d){ return yScale(d[1])-box_height/2; })
+            .attr("width", box_width)
+            .attr("height", box_height)
+            .attr("fill", "rgba(255,255,255,0.8)")
+        ;
         svg
             .selectAll("text.line-point-start")
             .data(min_dts)
@@ -216,7 +301,8 @@ class GanttViewer{
             .attr("y", function(d){ return yScale(d[1])+7; })
             .attr("text-anchor", "end")
             .text(function(d){ return dt2str(d[0]) })
-            .attr("fill", "rgba(0,0,0,0.8)");
+            .attr("fill", "rgba(0,0,0,0.7)")
+        ;
         svg
             .selectAll("text.line-point-end")
             .data(max_dts)
@@ -227,7 +313,8 @@ class GanttViewer{
             .attr("x", function(d){ return xScale(d[0])+19; })
             .attr("y", function(d){ return yScale(d[1])+7; })
             .text(function(d){ return dt2str(d[0]) })
-            .attr("fill", "rgba(0,0,0,0.8)");
+            .attr("fill", "rgba(0,0,0,0.8)")
+        ;
     }
 
 
